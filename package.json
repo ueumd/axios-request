@@ -1,0 +1,19 @@
+{
+  "name": "axios-request",
+  "version": "1.0.0",
+  "author": "ueumd",
+  "description": "axios-request",
+  "main": "HttpRequest.js",
+  "scripts": {
+    "serve": "node src/serve.js"
+  },
+  "dependencies": {
+    "koa": "^2.13.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-multer": "^1.0.2",
+    "koa-router": "^9.4.0",
+    "koa2-cors": "^2.0.6"
+  },
+  "keywords": [],
+  "license": "ISC"
+}
