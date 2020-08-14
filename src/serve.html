@@ -88,7 +88,7 @@
       },
 
       allTest1() {
-        http.get({
+        return http.get({
           url: '/getHotCityList',
           data: {
             adcode: '430100'
@@ -97,7 +97,7 @@
       },
 
       allTest2(){
-        http.post({
+        return http.post({
           url: '/login',
           data: {
             username: 'admin',
