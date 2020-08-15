@@ -3,8 +3,10 @@
  * https://github.com/ueumd/axios-request
  */
 
-let CancelToken = axios.CancelToken;
+const CancelToken = axios.CancelToken
+
 const HttpRequestAbortMap = {}
+
 const codeMap = {
   400: '错误请求',
   401: '未授权，请重新登录',
@@ -27,7 +29,7 @@ const codeMap = {
 axios.interceptors.request.use(
     (config) => {
 
-      // 取消请求
+      // 添加需要取消请求时的key
       if (config.abort) {
         config.cancelToken = new CancelToken((c) => {
           HttpRequestAbortMap[config.abort] = {}
@@ -125,9 +127,26 @@ class HttpRequest {
     }
   }
 
-  abort(cancelName) {
-    if (this.abortMap[cancelName] && typeof this.abortMap[cancelName].cancel === 'function') {
-      this.abortMap[cancelName].cancel()
+  /**
+   * 取消特定的请求
+   * @param abortName  请求时传入的aobrt参数
+   */
+  abort(abortName) {
+    if (this.abortMap[abortName] && typeof this.abortMap[abortName].cancel === 'function') {
+      this.abortMap[abortName].cancel()
+    }
+  }
+
+  /**
+   * 取消所有请求
+   */
+  abortAll() {
+    if (Object.keys(this.abortMap).length) {
+      for(let key of this.abortMap) {
+        if (typeof this.abortMap[key].cancel === 'function') {
+          this.abortMap[key].cancel()
+        }
+      }
     }
   }
 
@@ -136,6 +155,8 @@ class HttpRequest {
    * @param data         参数 {id:1, type:'xxx'}
    * @param header       自定义 header
    * @param timeout      自定义 超时
+   * @param abort        取消请请时所用的名称
+   * @param opts         其他axios配置
    * @returns {Promise<R>}
    */
   post({url, data = {}, header = {}, timeout = null, abort = null, opts = {}}) {

@@ -43,27 +43,39 @@ import {http} from "./HttpRequest.js"
     * @param data         参数 {id:1, type:'xxx'}
     * @param header       自定义 header
     * @param timeout      自定义 超时
-    * @param abort        是否需要取消请求
+    * @param abort        取消请请时所用的名称
+    * @param opts         其他定定义的选项
   */
   
-  http.get({url, data, header, timeout})
+  http.get({url, data, header = {}, abort = null, timeout, opts = {}})
   
   ```
 - post请求  
-```$xslt
+```
    /**
     * @param url          接口地址
     * @param data         参数 {id:1, type:'xxx'}
     * @param header       自定义 header
     * @param timeout      自定义 超时
-    * @param abort        是否需要取消请求
+    * @param abort        取消请请时所用的名称
+    * @param opts         其他定定义的选项
   */
-  http.post({url, data, header, timeout})
+  http.post({url, data, header = {}, abort = null, timeout, opts = {}})
 ```
 
 - 并发请求 
 ```$xslt
 http.all(promiseArray)
+```
+
+- 取消特定的请求
+```coffeescript
+http.abort('请求的称')
+```
+
+- 取消所有请求
+```coffeescript
+http.abortAll()
 ```
 
 ## 项目结构
