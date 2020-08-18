@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <title>Title</title>
   <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.20.0-0/axios.js"></script>
+<!--  <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.20.0-0/axios.js"></script>-->
+  <script src="lib/axios.js"></script>
   <style>
     .wrap {
       border: 1px dashed #ccc;
@@ -35,6 +36,10 @@
   http.config({
     baseURL: 'http://localhost:3000/api/v1',
     timeout: 100000,
+  })
+
+  http.dealWith(callback => {
+    callback()
   })
 
   new Vue({

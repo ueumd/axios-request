@@ -65,6 +65,7 @@ axios.interceptors.response.use(
             return Promise.resolve(config.data.data)
           } else {
             if (config.data && config.data.msg) {
+              http.emit('errorCode', config.data)
               return Promise.reject(config.data.msg)
             }
             return Promise.reject(config);
@@ -95,6 +96,7 @@ axios.interceptors.response.use(
  */
 class HttpRequest {
   constructor() {
+    this.events = {}
     this.baseURL = ''
     this.timeout = ''
     this.abortMap = HttpRequestAbortMap
@@ -124,6 +126,33 @@ class HttpRequest {
   setDefaultValues(defaultValues) {
     for (let key in defaultValues) {
       axios.defaults[key] = defaultValues[key]
+    }
+  }
+  on (event, fn) {
+    (this.events[event] || (this.events[event] = [])).push(fn)
+  }
+  off (event, fn) {
+    let events = this.events
+    if (events[event]) {
+      let list = events[event]
+      if (fn) {
+        let pos = list.indexOf(fn)
+        if (pos !== -1) {
+          list.splice(pos, 1)
+        }
+      } else {
+        delete events[event]
+      }
+    }
+  }
+  emit (event, ...args) {
+    let events = this.events
+    if (events[event]) {
+      let list = events[event].slice()
+      let fn
+      while ((fn = list.shift())) {
+        fn(...args)
+      }
     }
   }
 
