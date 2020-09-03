@@ -5,8 +5,9 @@
 const Koa = require('koa')
 const Router = require('koa-router')
 const cors = require('koa2-cors')
-const multer = require('koa-multer')
 const bodyParser = require('koa-bodyparser')
+const koaBody = require('koa-body')
+const path = require('path')
 
 const app = new Koa()
 
@@ -17,23 +18,18 @@ app.use(cors({
   }
 }))
 
-// 文件上传
-// 配置
-var storage = multer.diskStorage({
-  //文件保存路径
-  destination: function (req, file, cb) {
-    cb(null, './public')
-  },
-  //修改文件名称
-  filename: function (req, file, cb) {
-    var fileFormat = (file.originalname).split(".")  //以点分割成数组，数组的最后一项就是后缀名
-    cb(null, Date.now() + "." + fileFormat[fileFormat.length - 1])
+
+app.use(koaBody({
+  // 支持文件格式
+  multipart: true,
+  formidable: {
+    // 上传目录
+    uploadDir: path.join(__dirname, '../public'),
+    // 保留文件扩展名
+    keepExtensions: true,
   }
-})
+}))
 
-
-//加载配置
-var upload = multer({storage: storage})
 
 const router = new Router({
   prefix: '/api/v1' //全局路由前缀
@@ -42,7 +38,6 @@ const router = new Router({
 router.get('/', (ctx, next) => {
   ctx.body = 'axios demo'
 })
-
 /**
  * 获取热门城市
  * @param adcode 城市 adcode
@@ -173,23 +168,21 @@ router.post('/otherCode', (ctx, next) => {
   }
 })
 
+
 /**
  * 上传文件
  */
-router.post('/upload', upload.single('file'), (ctx, next) => {
-  console.log('filename: ' + ctx.req.file.filename)
+router.post('/upload', (ctx, next) => {
+  const file = ctx.request.files
   ctx.body = {
     code: 200,
-    data: {
-      filename: ctx.req.file.filename,
-    },
-    msg: 'ok'
+    data: file.image,
+    msg: 'upload'
   }
 })
 
 app.use(router.routes())
 app.use(router.allowedMethods())
-
 
 app.listen(3000, () => {
   console.log(`Server is starting at port 3000`)

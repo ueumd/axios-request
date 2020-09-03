@@ -220,12 +220,12 @@ class HttpRequest {
         msg,
         ...opts
       })
-          .then((res) => {
-            resolve(res)
-          })
-          .catch((err) => {
-            reject(err)
-          })
+      .then((res) => {
+        resolve(res)
+      })
+      .catch((err) => {
+        reject(err)
+      })
     })
   }
 
@@ -241,12 +241,12 @@ class HttpRequest {
         msg,
         ...opts
       })
-          .then((res) => {
-            resolve(res)
-          })
-          .catch((err) => {
-            reject(err)
-          })
+      .then((res) => {
+        resolve(res)
+      })
+      .catch((err) => {
+        reject(err)
+      })
     })
   }
 

@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Title</title>
   <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.js"></script>
-<!--  <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.20.0-0/axios.js"></script>-->
   <script src="lib/axios.js"></script>
   <style>
     .wrap {
@@ -35,7 +34,7 @@
   </div>
 
   <div class="wrap">
-　　 <input type="file" id="fileExport" @change="handleFileChange">
+　　 <input type="file" id="fileExport">
     <button type="button" @click="uploadFile">上传文件</button>
   </div>
 </div>
@@ -93,12 +92,13 @@
             username: 'admin',
             pwd: 12345
           }
-        }).then((res, msg) => {
-          console.log(res, msg)
+        }).then((res) => {
+          console.log(res)
           http.setCommonHeader('TOKEN', res.token)
           http.setCommonHeader('UUID', Date.now())
         })
       },
+
       testToken(){
         http.post({
           url: '/token'
@@ -106,6 +106,7 @@
           console.log(res)
         })
       },
+
       otherCode(){
         http.post({
           url: '/otherCode'
@@ -146,46 +147,40 @@
         })
       },
 
-      handleFileChange(file) {
-        console.log(file)
-      },
-
       uploadFile(){
         const file = this.$el.querySelector("#fileExport").files[0]
-        console.log(file)
+        console.log(file.name)
 
         const isImg = ~file.type.indexOf('image/')
-        const isLt5M = file.size / 1024 / 1024 < 1
+        const isLt5M = file.size / 1024 / 1024 < 10
 
         if (!isImg) {
           console.error('只能上传图片或视频文件!')
           return false
         }
         if (isImg && !isLt5M) {
-          console.error('上传图片大小不能超过 1MB!')
+          console.error('上传图片大小不能超过 10MB!')
           return false
         }
 
         const fd = new FormData()
         fd.append("image", file)
 
-        axios({
-          method: 'POST',
+        http.post({
           url: '/upload',
-          data: fd,
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          // 添加上传进度
-          onUploadProgress: function(e) {
-            var percentage = Math.round((e.loaded * 100) / e.total) || 0
-            if (percentage < 100) {
-              console.log(percentage + '%')  // 上传进度
+          data:fd,
+          opts: {
+            // 添加上传进度
+            onUploadProgress (e) {
+              let percentage = Math.round((e.loaded * 100) / e.total) || 0
+              if (percentage <= 100) {
+                console.log(percentage + '%')  // 上传进度
+              }
             }
           }
-        }).then(resp => {
-          console.log(resp.data)
-        }).catch(err => console.log(err))
+        }).then(res => {
+          console.log(res)
+        })
       }
     }
   })
