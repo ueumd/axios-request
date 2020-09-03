@@ -1,9 +1,14 @@
 {
-  "name": "axios-request",
-  "version": "1.0.0",
+  "name": "sav-axios-request",
+  "version": "0.0.1",
   "author": "ueumd",
+  "homepage": "https://github.com/ueumd/axios-request",
   "description": "axios-request",
   "main": "HttpRequest.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ueumd/axios-request"
+  },
   "scripts": {
     "serve": "node src/serve.js"
   },
@@ -15,5 +20,5 @@
     "koa2-cors": "^2.0.6"
   },
   "keywords": [],
-  "license": "ISC"
+  "license": "MIT"
 }
