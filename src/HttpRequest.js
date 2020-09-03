@@ -56,19 +56,35 @@ axios.interceptors.request.use(
 
 /**
  * 响应拦截
+ * data: {
+ *   code: 200,
+ *   data: '',
+ *   msg: 'ok'
+ * }
  */
 axios.interceptors.response.use(
-    (config) => {
-      if (config.status === 200) {
+    (response) => {
+      if (response.status === 200 && response.statusText === 'OK') {
         try {
-          if (config.data && config.data.code === 200) {
-            return Promise.resolve(config.data.data)
-          } else {
-            if (config.data && config.data.msg) {
-              http.emit('errorCode', config.data)
-              return Promise.reject(config.data.msg)
+          // 没有code正常正确请求
+          if (response.data && typeof response.data.code === 'undefined') {
+            return Promise.resolve(response.data)
+          }
+          // 后端code为200 data = {code: 200, data: {}, msg: ''}
+          if (response.data && response.data.code === 200) {
+            // 返回带有msg信息 {data: 'xxx', msg: 'ok'}
+            if (response.config.msg) {
+              return Promise.resolve(response.data)
             }
-            return Promise.reject(config);
+            // 只返回data {data: 'xxx'}
+            return Promise.resolve(response.data.data)
+          } else {
+            // 监听后端异常code，方便业务层处理
+            if (http.exceptionCode) {
+              http.emit('exceptionCode', response.data)
+              return Promise.reject(response.data)
+            }
+            return Promise.reject(response)
           }
         } catch (err) {
           console.error('[http 请求错误： ]', err)
@@ -99,6 +115,7 @@ class HttpRequest {
     this.events = {}
     this.baseURL = ''
     this.timeout = ''
+    this.exceptionCode = false
     this.abortMap = HttpRequestAbortMap
   }
 
@@ -110,7 +127,8 @@ class HttpRequest {
   }
 
   config(options) {
-    const {baseURL, timeout} = options
+    const {baseURL, timeout, exceptionCode} = options
+    this.exceptionCode = exceptionCode
     axios.defaults.baseURL = this.baseURL = baseURL
     axios.defaults.timeout = this.timeout = timeout || 100000
   }
@@ -186,9 +204,10 @@ class HttpRequest {
    * @param timeout      自定义 超时
    * @param abort        取消请请时所用的名称
    * @param opts         其他axios配置
+   * @param msg          是需要返回带msg信息 {data: [], msg: 'ok'}
    * @returns {Promise<R>}
    */
-  post({url, data = {}, header = {}, timeout = null, abort = null, opts = {}}) {
+  post({url, data = {}, header = {}, timeout = null, abort = null, msg = false, opts = {}}) {
     return new Promise((resolve, reject) => {
       axios({
         method: 'post',
@@ -197,6 +216,7 @@ class HttpRequest {
         header,
         timeout,
         abort,
+        msg,
         ...opts
       })
           .then((res) => {
@@ -208,7 +228,7 @@ class HttpRequest {
     })
   }
 
-  get({url, data = {}, header = {}, timeout = null, abort = null, opts = {}}) {
+  get({url, data = {}, header = {}, timeout = null, abort = null, msg = false, opts = {}}) {
     return new Promise((resolve, reject) => {
       axios({
         method: 'get',
@@ -217,6 +237,7 @@ class HttpRequest {
         header,
         timeout,
         abort,
+        msg,
         ...opts
       })
           .then((res) => {

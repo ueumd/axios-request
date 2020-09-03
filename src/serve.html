@@ -18,6 +18,10 @@
   <div class="wrap">
     <button type="button" @click="login">登录 设置token</button>
     <button type="button" @click="logout">退出 清除token</button>
+
+    <button type="button" @click="testToken">Token</button>
+
+    <button type="button" @click="otherCode">非200code</button>
   </div>
 
   <div class="wrap">
@@ -36,10 +40,12 @@
   http.config({
     baseURL: 'http://localhost:3000/api/v1',
     timeout: 100000,
+    exceptionCode: true
   })
 
-  http.dealWith(callback => {
-    callback()
+  // 监听后端code非200的情况
+  http.on('exceptionCode', res => {
+    console.error('[code]:', res)
   })
 
   new Vue({
@@ -81,10 +87,26 @@
             username: 'admin',
             pwd: 12345
           }
-        }).then(res => {
-          console.log(res)
+        }).then((res, msg) => {
+          console.log(res, msg)
           http.setCommonHeader('TOKEN', res.token)
           http.setCommonHeader('UUID', Date.now())
+        })
+      },
+      testToken(){
+        http.post({
+          url: '/token'
+        }).then(res => {
+          console.log(res)
+        })
+      },
+      otherCode(){
+        http.post({
+          url: '/otherCode'
+        }).then(res => {
+          console.log(res)
+        }).catch(err => {
+          console.error(err.msg)
         })
       },
 

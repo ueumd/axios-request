@@ -152,6 +152,28 @@ router.post('/login', (ctx, next) => {
 })
 
 /**
+ * token
+ */
+router.post('/token', (ctx, next) => {
+  ctx.body = {
+    token: 'xxxxx-xxxx-' + Date.now()
+  }
+})
+
+/**
+ * otherCode
+ */
+router.post('/otherCode', (ctx, next) => {
+  ctx.body = {
+    code: '0004',
+    data: null,
+    msg: '用户名密码错误'
+  }
+})
+
+
+
+/**
  * 上传文件
  */
 router.post('/upload', upload.single('file'), async (ctx, next) => {

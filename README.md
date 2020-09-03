@@ -22,7 +22,7 @@ npm run serve
 
 ## 前端配置
 
-```$xslt
+```js
 import {http} from "./HttpRequest.js"
 
   http.config({
@@ -37,7 +37,7 @@ import {http} from "./HttpRequest.js"
 ## 前端请求
 
 - get请求
-  ```
+```js
    /**
     * @param url          接口地址
     * @param data         参数 {id:1, type:'xxx'}
@@ -49,9 +49,10 @@ import {http} from "./HttpRequest.js"
   
   http.get({url, data, header = {}, abort = null, timeout, opts = {}})
   
-  ```
+ ```
 - post请求  
-```
+
+```js
    /**
     * @param url          接口地址
     * @param data         参数 {id:1, type:'xxx'}
@@ -64,30 +65,30 @@ import {http} from "./HttpRequest.js"
 ```
 
 - 并发请求 
-```$xslt
+```js
 http.all(promiseArray)
 ```
 
 - 取消特定的请求
-```coffeescript
+```js
 http.abort('请求的称')
 ```
 
 - 取消所有请求
-```coffeescript
+```js
 http.abortAll()
 ```
 
 ## 项目结构
 
-```
+```bash
 src
 ├── serve.js       ## API接口
 ├── serve.html     ## 请求demo示例
 ├── HttpRequest.js ## 封装axios请求
 ```
 
-```$xslt
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
