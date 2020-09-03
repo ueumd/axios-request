@@ -27,11 +27,11 @@ const codeMap = {
  * config 发起请求的参数实体
  */
 axios.interceptors.request.use(
-    (config) => {
+    (request) => {
 
       // 添加需要取消请求时的key
-      if (config.abort) {
-        config.cancelToken = new CancelToken((c) => {
+      if (request.abort) {
+        request.cancelToken = new CancelToken((c) => {
           HttpRequestAbortMap[config.abort] = {}
           HttpRequestAbortMap[config.abort] = {
             cancel: c,
@@ -41,13 +41,13 @@ axios.interceptors.request.use(
       }
 
       // 自定义header
-      if (config.header && Object.keys(config.headers).length) {
-        for (let key in config.header) {
-          config.headers[key] = config.header[key]
+      if (request.header && Object.keys(request.headers).length) {
+        for (let key in request.header) {
+          request.headers[key] = request.header[key]
         }
       }
 
-      return config
+      return request
     },
     (error) => {
       return Promise.reject(error)
