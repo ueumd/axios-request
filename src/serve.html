@@ -41,11 +41,12 @@
 </div>
 <script type="module">
   import {http} from "./HttpRequest.js"
-
+  window.app = http
   http.config({
     baseURL: 'http://localhost:3000/api/v1',
     timeout: 100000,
-    exceptionCode: false
+    exceptionCode: false,
+    abortFlag: true
   })
 
   // 监听后端code非200的情况
@@ -57,12 +58,12 @@
     el: '#app',
     methods: {
       abortGetHotCityList(){
-        http.abort('getHotCityList')
+        http.abort('/getHotCityList')
       },
       getHotCityList() {
         http.get({
           url: '/getHotCityList',
-          abort: 'getHotCityList'
+          abort: true,
         }).then((res) => {
           console.log(res);
         }).catch((err) => {

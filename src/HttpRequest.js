@@ -30,12 +30,11 @@ axios.interceptors.request.use(
     (request) => {
 
       // 添加需要取消请求时的key
-      if (request.abort) {
-        request.cancelToken = new CancelToken((c) => {
-          HttpRequestAbortMap[config.abort] = {}
-          HttpRequestAbortMap[config.abort] = {
-            cancel: c,
-            url: config.url
+      if (http.abortFlag || request.abort) {
+        request.cancelToken = new CancelToken((cancel) => {
+          HttpRequestAbortMap[request.url] = {}
+          HttpRequestAbortMap[request.url] = {
+            cancel: cancel
           }
         })
       }
@@ -116,6 +115,7 @@ class HttpRequest {
     this.baseURL = ''
     this.timeout = ''
     this.exceptionCode = false
+    this.abortFlag = false
     this.abortMap = HttpRequestAbortMap
   }
 
@@ -127,8 +127,9 @@ class HttpRequest {
   }
 
   config(options) {
-    const {baseURL, timeout, exceptionCode} = options
+    const {baseURL, timeout, exceptionCode, abortFlag} = options
     this.exceptionCode = exceptionCode || false
+    this.abortFlag = abortFlag || false
     axios.defaults.baseURL = this.baseURL = baseURL
     axios.defaults.timeout = this.timeout = timeout || 100000
   }
@@ -178,9 +179,9 @@ class HttpRequest {
    * 取消特定的请求
    * @param abortName  请求时传入的aobrt参数
    */
-  abort(abortName) {
-    if (this.abortMap[abortName] && typeof this.abortMap[abortName].cancel === 'function') {
-      this.abortMap[abortName].cancel()
+  abort(api) {
+    if (this.abortMap[api] && typeof this.abortMap[api].cancel === 'function') {
+      this.abortMap[api].cancel()
     }
   }
 
@@ -202,12 +203,12 @@ class HttpRequest {
    * @param data         参数 {id:1, type:'xxx'}
    * @param header       自定义 header
    * @param timeout      自定义 超时
-   * @param abort        取消请请时所用的名称
+   * @param abort        是否需要取消息
    * @param opts         其他axios配置
    * @param msg          是需要返回带msg信息 {data: [], msg: 'ok'}
    * @returns {Promise<R>}
    */
-  post({url, data = {}, header = {}, timeout = null, abort = null, msg = false, opts = {}}) {
+  post({url, data = {}, header = {}, timeout = null, abort = false, msg = false, opts = {}}) {
     return new Promise((resolve, reject) => {
       axios({
         method: 'post',
@@ -228,7 +229,7 @@ class HttpRequest {
     })
   }
 
-  get({url, data = {}, header = {}, timeout = null, abort = null, msg = false, opts = {}}) {
+  get({url, data = {}, header = {}, timeout = null, abort = false, msg = false, opts = {}}) {
     return new Promise((resolve, reject) => {
       axios({
         method: 'get',
