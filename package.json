@@ -10,7 +10,8 @@
     "url": "https://github.com/ueumd/axios-request"
   },
   "scripts": {
-    "serve": "node src/serve.js"
+    "serve": "nodemon src/serve.js",
+    "debug": "nodemon --inspect src/serve.js"
   },
   "dependencies": {
     "koa": "^2.13.0",
@@ -20,5 +21,9 @@
     "koa2-cors": "^2.0.6"
   },
   "keywords": [],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "koa-body": "^4.2.0",
+    "koa-static": "^5.0.0"
+  }
 }

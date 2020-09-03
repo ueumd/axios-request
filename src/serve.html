@@ -33,6 +33,11 @@
   <div class="wrap">
     <button type="button" @click="all">并发请求</button>
   </div>
+
+  <div class="wrap">
+　　 <input type="file" id="fileExport" @change="handleFileChange">
+    <button type="button" @click="uploadFile">上传文件</button>
+  </div>
 </div>
 <script type="module">
   import {http} from "./HttpRequest.js"
@@ -138,6 +143,48 @@
         .then(res => {
           console.log(res)
         })
+      },
+
+      handleFileChange(file) {
+        console.log(file)
+      },
+
+      uploadFile(){
+        const file = this.$el.querySelector("#fileExport").files[0]
+        console.log(file)
+
+        const isImg = ~file.type.indexOf('image/')
+        const isLt5M = file.size / 1024 / 1024 < 1
+
+        if (!isImg) {
+          console.error('只能上传图片或视频文件!')
+          return false
+        }
+        if (isImg && !isLt5M) {
+          console.error('上传图片大小不能超过 1MB!')
+          return false
+        }
+
+        const fd = new FormData()
+        fd.append("image", file)
+
+        axios({
+          method: 'POST',
+          url: '/upload',
+          data: fd,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          // 添加上传进度
+          onUploadProgress: function(e) {
+            var percentage = Math.round((e.loaded * 100) / e.total) || 0
+            if (percentage < 100) {
+              console.log(percentage + '%')  // 上传进度
+            }
+          }
+        }).then(resp => {
+          console.log(resp.data)
+        }).catch(err => console.log(err))
       }
     }
   })

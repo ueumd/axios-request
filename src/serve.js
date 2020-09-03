@@ -22,7 +22,7 @@ app.use(cors({
 var storage = multer.diskStorage({
   //文件保存路径
   destination: function (req, file, cb) {
-    cb(null, 'uploads')
+    cb(null, './public')
   },
   //修改文件名称
   filename: function (req, file, cb) {
@@ -30,6 +30,8 @@ var storage = multer.diskStorage({
     cb(null, Date.now() + "." + fileFormat[fileFormat.length - 1])
   }
 })
+
+
 //加载配置
 var upload = multer({storage: storage})
 
@@ -171,12 +173,10 @@ router.post('/otherCode', (ctx, next) => {
   }
 })
 
-
-
 /**
  * 上传文件
  */
-router.post('/upload', upload.single('file'), async (ctx, next) => {
+router.post('/upload', upload.single('file'), (ctx, next) => {
   console.log('filename: ' + ctx.req.file.filename)
   ctx.body = {
     code: 200,
