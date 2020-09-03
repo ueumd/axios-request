@@ -84,7 +84,7 @@ axios.interceptors.response.use(
               http.emit('exceptionCode', response.data)
               return Promise.reject(response.data)
             }
-            return Promise.reject(response)
+            return Promise.reject(response.data)
           }
         } catch (err) {
           console.error('[http 请求错误： ]', err)
@@ -128,7 +128,7 @@ class HttpRequest {
 
   config(options) {
     const {baseURL, timeout, exceptionCode} = options
-    this.exceptionCode = exceptionCode
+    this.exceptionCode = exceptionCode || false
     axios.defaults.baseURL = this.baseURL = baseURL
     axios.defaults.timeout = this.timeout = timeout || 100000
   }

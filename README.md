@@ -24,14 +24,20 @@ npm run serve
 
 ```js
 import {http} from "./HttpRequest.js"
-
-  http.config({
+http.config({
     baseURL: 'http://localhost:3000/api/v1',
     timeout: 100000,
-  })
+    exceptionCode: false
+})
 
-  http.setCommonHeader('TOKEN', res.token)
-  http.setCommonHeader('UUID', Date.now())
+// 监听后端code非200的情况
+http.on('exceptionCode', res => {
+    console.error('[code]:', res)
+})
+
+
+http.setCommonHeader('TOKEN', res.token)
+http.setCommonHeader('UUID', Date.now())
 ```
 
 ## 前端请求
